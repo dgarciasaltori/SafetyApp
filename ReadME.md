@@ -34,7 +34,7 @@ Salve o arquivo.
 # (CUIDADO!! NÃO SE ESQUEÇA DE ATIVÁ-LOS NOVAMENTE APÓS CONCLUIR O ESTUDO!!)
 
 ### Para melhor instrução estarei deixando um video, basta acessar usando o link abaixo:
-## Link YouTube:
+## Link YouTube: https://youtu.be/lNEE3q0dceI
 
 # Safety App
 ## Welcome to the Safety App.
@@ -72,4 +72,4 @@ It is likely to have to turn off your antivirus and also Windows Defender, as th
 # (Be careful !! Do not forget to activate them again after completing the study !!)
 
 ### For better instruction I will be leaving a video, just access using the link below:
-## Link YouTube:
+## Link YouTube: https://youtu.be/lNEE3q0dceI
