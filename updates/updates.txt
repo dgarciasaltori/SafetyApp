@@ -1,0 +1,107 @@
+
+
+class CheckableFileItem(QListWidgetItem):
+    def __init__(self, file_name):
+        super().__init__()
+        self.file_name = file_name
+        self.setFlags(self.flags() | Qt.ItemIsUserCheckable)
+        self.setCheckState(Qt.Unchecked)
+        self.widget = QWidget()
+        layout = QHBoxLayout()
+        self.checkbox = QCheckBox()
+        self.checkbox.setChecked(False)
+        self.checkbox.stateChanged.connect(self.handle_checkbox_change)
+        self.label = QLabel(file_name)
+        layout.addWidget(self.checkbox)
+        layout.addWidget(self.label)
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.widget.setLayout(layout)
+        self.setSizeHint(self.widget.sizeHint())
+
+    def handle_checkbox_change(self, state):
+        self.setCheckState(Qt.Checked if state else Qt.Unchecked)
+
+class FileListWidget(QListWidget):
+    def __init__(self):
+        super().__init__()
+        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+
+    def add_file(self, file_name):
+        item = CheckableFileItem(file_name)
+        self.addItem(item)
+        self.setItemWidget(item, item.widget)
+
+    def get_checked_files(self):
+        checked_items = [self.item(i) for i in range(self.count())
+                        if self.item(i).checkState() == Qt.Checked]
+        return [item.file_name for item in checked_items]
+
+    def clear_checked_files(self):
+        for i in range(self.count()):
+            if self.item(i).checkState() == Qt.Checked:
+                self.takeItem(i)
+
+
+Envio de e-mail:
+
+buttons_layout.addWidget(self.send_email_btn)
+self.send_email_btn.clicked.connect(self.send_file)
+self.send_email_btn = QPushButton('Enviar por e-mail')
+
+
+    def send_file(self):
+        selected_item = self.files_list.currentItem()
+        if not selected_item:
+            QMessageBox.warning(self, 'Aviso', 'Selecione um arquivo para enviar por e-mail.')
+            return
+        # Verifica se o item selecionado é válido
+        if not isinstance(selected_item, QListWidgetItem):
+            print("Selecione um arquivo válido.")
+            return
+        
+        # Recupera o caminho do arquivo selecionado
+        selected_item_path = selected_item.text()
+        
+        # Recupera os dados do arquivo do banco de dados
+        conn = sqlite3.connect('files.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT data FROM files WHERE path = ?", (selected_item_path,))
+        file_data = cursor.fetchone()
+        if not file_data:
+            QMessageBox.warning(self, 'Aviso', 'O arquivo selecionado não foi encontrado no banco de dados.')
+            return
+        
+        # Converte os dados do arquivo em um objeto BytesIO
+        file_stream = io.BytesIO(file_data[0])
+        
+        # Configura as informações do servidor SMTP
+        smtp_server = "smtp.umbler.com"
+        smtp_port = 587
+        smtp_username = "noreplay@saltori.dev"
+        smtp_password = "5rvDYvNcS3DS-S"
+        
+        # Cria a mensagem de e-mail
+        # Perguntar para quem enviar o e-mail
+        email, ok = QInputDialog.getText(self, "Enviar e-mail", "Insira os endereços de e-mail separados por vírgula")
+        # Verificar se o usuário confirmou o diálogo
+        if ok:
+            # Cria a mensagem de e-mail
+            msg = MIMEMultipart()
+            msg["From"] = smtp_username
+            msg["To"] = email
+            msg["Subject"] = "<<Arquivo seguro>> Aqui está seu arquivo enviado pelo Safity File App"
+            text = f"Olá! \nSeu arquivo está em anexo. \n Obrigado por usar nosso serviço de armazenamento de arquivos. \n Atenciosamente, \n Equipe Safity File @ saltori.dev"
+            body = MIMEText(text)
+            msg.attach(body)
+            if file_stream.getbuffer().nbytes > 0:
+                file_data = file_stream.getvalue()
+                # Adiciona o arquivo como anexo no e-mail
+                attach = MIMEApplication(file_data, _subtype='octet-stream')
+                attach.add_header('Content-Disposition', 'attachment', filename=selected_item_path)
+            msg.attach(attach)
+            # Configura o cliente SMTP e envia a mensagem de e-mail
+            with smtplib.SMTP(smtp_server, smtp_port) as server:
+                server.starttls()
+                server.login(smtp_username, smtp_password)
+                server.send_message(msg)
+                QMessageBox.information(self, 'Sucesso', 'O arquivo foi enviado com sucesso para o endereço de e-mail informado.')
