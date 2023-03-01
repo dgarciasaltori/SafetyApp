@@ -15,8 +15,8 @@ import sqlite3
 import cloudmersive_virus_api_client
 from cloudmersive_virus_api_client.rest import ApiException
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QListWidgetItem, QFileDialog, QPushButton, QListWidget
-from PyQt5.QtWidgets import QApplication, QListWidgetItem, QMessageBox, QWidget, QHBoxLayout, QVBoxLayout, QAbstractItemView
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QPushButton, QListWidget
+from PyQt5.QtWidgets import QApplication, QListWidgetItem, QWidget, QHBoxLayout, QVBoxLayout, QAbstractItemView
 
 class FileUploader(QMainWindow):
     def __init__(self):
