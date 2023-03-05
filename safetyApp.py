@@ -87,7 +87,7 @@ class FileUploader(QMainWindow):
     def checkVirus(self, file_path):
         # Configurando API key authorization: Apikey
         configuration = cloudmersive_virus_api_client.Configuration()
-        configuration.api_key['Apikey'] = '45b86943-d9ba-4113-afd7-d22c83226453'
+        configuration.api_key['Apikey'] = 'API-KEY'
         # Cria a instancia com a API Cloudmersive
         api_instance = cloudmersive_virus_api_client.ScanApi(cloudmersive_virus_api_client.ApiClient(configuration))
         try:
